@@ -1,0 +1,138 @@
+File类
+文件和目录路径名的抽象表示形式
+ps:File是操作文件的一种方式,需要传入一个路径,通过对当前路径的一个封装,
+	封装成一个File对象,通过File类中所提供的一些方法可以对路径下的文件进行操作
+
+路径:
+绝对路径--->是从盘符开始的路径 C:\text\demo.txt
+相对路径--->不是盘符开始的路径     /text/demo.txt --> C:\
+ps:相对路径需要有参考路径
+千万不要做:在代码中创建对象--> File  参数的参数即可以是一个相对路径也可以是绝对路径
+                  在程序中书写相对路径是有参考值,参考的是当前工程
+          /text/demo.txt 参考c:做不到的  -->  找不到文件路径  绝对路径
+java是需要资源文件 --> 配置 图片 音频
+将这些资源直接放到当前工程下这样的好处是 ,方便使用便于移植,应该使用相对路径
+若将容量较大的文件放入到工程,就会将大文件挂载到服务器端,就会进行远程下载,然后匹配系统进行路径匹配     
+
+Unix:(收费的) 严格区分大小写的 使用"/"来分割路径(Linux)
+Windows: 使用\来分割路径,因为\在java代码中代表转义,所以书写路径是就需要使用\\
+ps:相对路径不需要 ,为了方便开发其实Winodws其实是支持/
+   "C:\\text\\demo.txt" --> C:/text/demo.txt
+   路径是不会自动添加\\ ,新版本4.7开始会自动添加\\
+   
+我们怎么知道在什么平台下使用什么路径呢?
+可以使用File类中所提供的字段来区分
+看FileDemo2
+
+遍历目录(了解)
+看FileDemo3
+
+文件过滤器
+看FileDemo4
+
+IO流  
+ps:流不难,方法不多一共也就6个方法,写流的读写方式是固定形式,所以记下来!
+IO --->Input/Output 输入输出的一种方式
+为什么程序需要使用IO这种形式?
+1.DVD系统中存储的数据是默认,还可以添加新数据,但是一旦程序关闭,所有的数据都无法保存下来
+    将数据保存到物理介质之中,就可以进行长久的保存
+  
+  所有的数据都是存储到内存中,内存有一个最大的弊端[掉电易失],为了保证数据的安全性,此时需要一种方式
+  将当前内存中的数据保存到物理介质,就可以使用IO流的形式
+  
+ ps:内存的读取速度绝对是大于磁盘的读取数据的
+ 
+名词:
+物理介质:文件,磁盘,网络,压缩包,等等
+IO --> Input输入/output输出设备
+
+学些的IO就是一个管道,有了这个管道之后就可以将内存中数据写的到磁盘中
+                                     有了这个管道之后就可以将磁盘中的文件写(读)会到内存中
+                                     
+IO流的分类:
+流向划分:输入流 输出流
+数据单位划分: 字节流(byte)  字符流(char)
+功能划分: 转换流,节点流 ,包装流 ,缓冲流 等等                                     
+                                     
+四大父类流
+
+InputStream  OutputStream 字节输入输出流
+Reader       Writer       字符输入输出流
+
+InputStream和OutputStream
+流向问题:
+InputStream字节输入流 --> 读 从磁盘读取到内存中
+OutputStream字节输出流 --> 写 从内存写入到磁盘
+流中的数据类型: byte字节类型
+
+InputStream字节输入流
+当前流式父类流并且是一个抽象类所以不能直接创建对象
+将内存中的文件写入到磁盘,然就将磁盘中的文件在读取到内存中
+所以FileInputStream文件字节输入流
+常用方法
+FileInputStream(File file) 通过File对象创建文件字节输入流
+FileInputStream(String name) 通过路径创建文件字节输入流对象
+void close() 关闭流资源 需要在finally中使用       
+int read()   读取一个字节
+int read(byte[] b) 读取字节数组长度的内容并存到字节数组中
+int read(byte[] b, int off, int len) 读取字节数长度的内容,从字节数组中那个位置开始存储,读取的长度是多少
+看FileInputStream包
+
+OutputStream字节输出流     
+因为当前类是抽象类,所以不能直接创建对象
+所以需要使用其子类FileOutputStream文件字节输出流
+当前里流中有一个方法 flush
+ps:在没有涉及到TCP网络的,写与不写flush这个方法的效果都是一样的
+     但实际有些细微的差别若调用flush,会加快流的流速  
+   若是在TCP中必须调用次方法,不然流中的数据会被阻塞到网络中,所以这里必须添加flush      
+FileOutputStream(File file) 通过File对象创建文件字节输出流对象
+FileOutputStream(File file, boolean append) 通过File对象创建文件字节输出流对象,并且进行内容追加
+FileOutputStream(String name) 通过路径创建文件字节输出流对象
+FileOutputStream(String name, boolean append) 通过File对象创建文件字节输出流对象,并且进行内容追加
+ps:若想追加那么参数就传入 true         
+void close()   关闭流资源 
+void write(byte[] b)  将字节数组内容写入到文件
+void write(byte[] b, int off, int len)  将字节数组内容写入到文件从什么位置开始写,写多长
+void write(int b)  将一个字节的内容写入到文件
+
+总结:
+FileInputSteam和FileOutputStream
+字节流:数据是字节
+必须会循环读取文件中的数据,需要在循环读取中将数据写出到文件中
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
