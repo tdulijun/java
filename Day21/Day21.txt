@@ -1,0 +1,271 @@
+回顾:
+学习了流:
+IO  --> input 和 output
+IO相当于管道 作为 硬盘和内存之间一种连通的方式
+将数据固化到磁盘,将磁盘中的数据在读取回来
+InputStream 和 OutoutStream 字节输入输出流(父类) --> 抽象类不能直接new
+Reader 和  Writer  字符输入输出流(父类) --> 抽象类不能直接new
+read读取(磁盘的数据读取到内存中) 数组 --> byte 和 char
+返回值 --->  实际读取的长度  正常读取时实际长度 读取文件的末尾返回-1
+进行一个循环读取
+writer写出(将存储在数组中的数据写出去) 数组 --->byte 和 char
+子类:
+
+文件字节输入输出流:FileInputStream 和 FileOutputStream -->完全参考父类流中的方法来使用
+FileOutputStream创建对象时,可以做为数据的追加 --> boolean -->true 追加 不写或是false 不追加             
+文件字符输入输出流:FileReader 和 FileWritrer --->完全参考父类流中的方法
+
+标准输入输出流
+System.in 和  System.out (重定向)
+改变流流向从而让系统流得到不同的数据获取方式
+System.in --> InputStream 字节输入流
+System.setIn(字节输入流对象)
+System.out --> PrintStream(字节打印流)--->OutputStream(子类)
+System.setOut(字节打印流对象)
+
+转换流---> 字符编码 ---> GBK,UTF-8
+InputStreamReader 字节流转换字符流   --->父类是  Reader(字符流)
+OuputStreamWriter 字符流转换字节流   --->父类是  Writer(字符流)
+可以在读取文件是 指定读取文件的字符编码  在写出文件时 指定写出文件的字符编码
+调用当前两个流的 两个参数版本的构造方法
+直接以字符串的形式指定字符编码"UTF-8"
+使用Charset类中的forName来指定字符串编码 Charset.forName("GBK")
+只有读取时指定编码正确,你才能在写出时改变字符编码
+读取是字符编码错误了,无论如何写出都是错误
+
+内存流 ---> 将数据存储到内存中  ---> 数组  , 字符串
+ByteArrayInputStream 和 ByteArrayOutputStream  --> 数组内存字节输入输出流
+CharArrayReader 和 CharArrayWiter              --> 数组内存字符输入输出流
+StringReader  和  StringWriter                  --> 字符串内存输入输出流
+内存中存储数据的读写速度 是绝对大于  磁盘中存储数据的读写速度
+只要是磁盘就会进行IO
+内存存储数据最大弊端:掉电易失-->电源掉了,存储到内存中数据就全部的消失
+
+字节缓冲输入输出流
+缓冲区: --> 将数据读取到这个缓冲区中,通过这个缓冲区加快对流的操作(流的流速加快了)
+BufferedInputStream
+BufferedOutputStream
+这两个流的使用方式完全可以参考InputStream和OutputStream
+
+
+字符缓冲输入输出流
+自带缓冲区
+BufferedReader 字符缓冲输入流
+
+构造方法
+BufferedReader(Reader in) 传入字符流对象创建字符缓冲流对象
+BufferedReader(Reader in, int sz)传入字符流对象创建字符缓冲流对象,并设置缓冲区大小
+常用方法:
+void close() 关闭流
+int read()  读取单个字符
+int read(char[] cbuf); 读取字符数组的长度的内容
+int read(char[] cbuf, int off, int len)读取数组的长度 从什么位置开始 写到什么位置
+
+特殊方法:
+读取一行 String readLine() 读取一个文本行。 返回的是String类型
+          
+BufferedReade  字符缓冲输出流
+构造方法:
+BufferedWriter(Writer out) 通过字符输入流创建字符缓冲输入流对象
+BufferedWriter(Writer out, int sz) 通过字符输入流创建字符缓冲输入流对象,并指定缓冲区大小
+      
+常用方法: 
+close() 关闭此流
+void flush() 刷新流
+void write(char[] cbuf, int off, int len) 写入字符数组的长度,从什么位置开始写, 写多长    
+void write(int c) 写单个字符
+void write(String s, int off, int len) 写入字符串,从什么位置写,写多长 
+  
+  特有方法:      
+ void newLine() 写入一个行分隔符。  
+
+需求:现在所有异常一律抛出 throws,先在当前工程下创建一个文件夹dir,
+          将当前程序使用字符缓冲输入输出流循环读取并写入到dir文件夹下
+   ps写流的步骤:
+      1.创建流对象(确定流的流向和数据类型)
+      2.循环读取文件中的数据  --> 定义一个变量来获取实际读取的长度
+        		            	判断是否读取到文件的末尾-1
+ 								如果没有 将数据写出去
+      3.关闭流								
+看BufferedReaderAndWriterDemo类
+总结:
+  字节和字符缓冲输入输出流 自带缓冲区 默认大小是8192 --> 1024*8
+  字节的缓冲流操作方式没有特殊方法可以完全参数父类流的使用方法 
+  字符的缓冲流操作方法有特殊方法,并且建议使用
+  读取数据时使用readLine方法 --> 读取一个行数据返回值是String类型
+  既然使用readLine读取数据那么就需要配合使用newLine这个方法
+  为什么?因为readLine不能读取换行符号,所以为了保证数据的完成性需要添加换行符即newLine方法   
+
+
+需求: 转换流的,可以设置当前文件的字符编码 转换流默认就是字符流的形式,所以我们可以使用缓冲流包装这个转换流
+ps:包装流的形式
+看BufferedReaderAndWriterDemo2类
+
+
+属性文件Properties
+Properties 继承于 Hashtable资源文件
+Hashtable是Map的实现了 Map 键值对形式 key -- value
+key保证唯一  value可以不唯一    取出键值对最好的方式 通过key 来获取
+Hashtable和HashMap区别
+Hashtable是线程安全的,效率低
+HashMap线程不安全的,效率高
+若是在多线程并发访问的前提下是否要使用HashTable?
+肯定不是的,因为Collections工具类型中提供了将HashMap转换为线程安全的方法
+Hashtable的使用和HashMap的使用是基本相同
+
+Properties 关系 存储信息 也是以一种键值对的形式存储的 
+ps:传输数据数据时,有一种轻量级的传输方式
+ XML --> 对于web即可以作为文件的配置,还可以作为一种数据的传输个是   --->如何书写为了以后配置hadoop环境       
+ Json --> 对于web是一种数据传输形式 --->是一个典型的键值对形式
+ Properties --> 既可以作为数据传输也可以作为一种文件配置  --> 作为配置文件居多
+
+需求:如何将数据吸入到Properties文件中,然就在将文件读取回来
+ 写JDBC --> 通过程序 对数据库进行操作
+ 配置一个文件用来存储数据的的用户名,密码和驱动
+ 是可以完全程序中的,但是修改起来比较麻烦而且不易于维护
+ 提供一种文件这个文件具备一种键值对的形式 --> Properties,此时就便于维护了
+ 模拟过程
+ 出现如下信息在文件中:
+ com.qfedu.user = "张三";;
+ com.qfedu.pwd = "123";
+ com.qfedu.driver = "com.mysql.driver";
+ 已经完成了如何通过程序将Properties对象转换为文件
+ 若向当前对象中存储数据 setProperty(key, value);
+ 若将当前对象写成文件store(字节流对象, 注释(String形式));
+ Properties文件的编码时ISO-8859-1是不支持中文的,建议不要写汉字   
+
+将Properties中的数据读取回来
+1.先创建一个Properties对象
+load(字节输入流) 加载properties文件 
+2.获取文件中对应的属性值
+getProperty(对应的key)
+
+
+对象流
+流中的数据是对象
+ObjectInputStream 对象字节输入流
+ObjectOutputStream 对象字节输出流
+如何将对象写入到流中生成文件, 将文件中的对象读取到内存中恢复成数据
+
+ObjectInputStream
+通过ObjectInputStream流对象将,文件中存储的对象读取到内存中,这个过程叫做反序列化
+ps:这个文件必须是通过ObjectOutputSteam这个流对象写出去
+
+构造方法:
+ObjectInputStream(InputStream in) 通过字节输入流创建对象流对象
+ps:对象流主要操作的是文件,所以参数传入FileInputStream即可
+
+常用方法
+void close() 关闭输入流。       
+Object readObject() 从文件中将对象读取回来。 
+
+ObjectOutputStream
+通过ObjectOutputStream流对象,将对象通过流的形式固化成文件,这个过程叫做序列
+ps:若通过ObjectOutputStream将对象固化文件,那么必须通过ObjectInputStream才能将对象恢复
+
+构造方法:
+ObjectOutputStream(OutputStream out) 通过字节输入流对象创建对象流对象。
+ps:对象流主要操作的是文件,所以参数传入FileOutputStream即可
+
+常用方法:
+void close() 关闭流。 
+void writeObject(Object obj)将当前对象写入到流中并固化成文件 
+        
+
+对象的序列化和反序列化
+
+对象的序列化就是将对象固化成文件的过程使用的流:ObjectOutputStream
+
+对象的反序列化就是将固化文件中的对象在读取到内存中:ObjectInputStream
+
+看ObjectInputAndOutput包  --->单个对象存储到序列化文件中
+
+扩展:
+多个对象的的序列化和反序列化
+看ObjectInputAndOutput.Extend包
+
+只要系统类实现了Serializable那么都可以进行序列化和反序列化
+
+总结:
+InputStream 和 OutputStream 字节输入输出流
+FileInputStream 和 FileOutputStream 文件字节输入输出流
+System.in 和  System.out 标准输入输出流
+System.out的实现类是PrintStream 字节打印流
+ObjectInputStream   和    ObjectOutputStream 对象字节输出输出流
+BufferedInputStream 和 BufferedOutputStream  字节缓冲输入输出流
+
+Reader  和   Writer  字符输出输出流
+FileReader 和 FileWriter 文件字符输出输出流
+InputStreamReader 字节转换字符流	 和  OutputStreamWriter 字符转换字节流
+BufferedReader 和  BufferWriter  字符缓冲输入输出流
+
+内存流;
+ByteArrayInputStream 和 ByteArrayOutputStream  字节数组内存输入输出流
+CharArrayReader 和 CharArrayWriter   字符数组内存输入输出流
+StringReader 和  StringWriter    字符串内存输入输出流
+
+除了对象流之外:
+确定流的流向,知道流中的数据是什么类型
+  从文件到内存(读)  从内存到文件(写) --> byte char
+ 定义变量获取实际读取的长度 
+ 循环读取调用read方法判断是否是-1,若是就是读取到文件的末尾,不是就是实际长度
+   将数组存储的数据writer(数组,从数组开始的位置,实际长度)文件中
+  输出流对象.flush();
+  输出流对象.close();
+  输入流对象.close();    
+  特殊的是转换流 -->指定读取和写出文件的编码   --> 读错了写永远都不对
+  
+对象类是一个特殊的流
+ 将对象写入(固化)到文件中的过程,序列化-->需要使用ObjectOutputStream这个流
+ 将文件中的对象读取到内存中的过程,反序列化 -->需要使用ObjectInputStream这个流     
+ 若需要序列化和反序列化那么当前对象所对象的类必须实现Serializable接口
+ 
+知识点:
+线程(两个部分,如何使用线程 应用部分多线程并发访问临界资源,锁,生产者和消费者模式有序的交替执行,双重检锁机制,死锁(了解),线程声明周期图) 
+   线程中发生任何事情(打印)都是对的,线程是不可控(干预)
+  现在电脑没有单片机(单核cpu),所以你的打印和我的打印可能是不一样,是对的电脑cpu是不一样  
+   
+ TCP/IP ---> 4个版本
+ UDP    ---> 包
+ 反射 --> 类的加载 如何获取Class类型  通过反射获取属性构造方法方法的调用方式, 类的加载ClassLoader
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
